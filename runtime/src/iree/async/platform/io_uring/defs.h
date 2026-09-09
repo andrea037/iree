@@ -35,9 +35,10 @@ extern "C" {
 // generic syscall table; x86 happens to use the same values in both its 32-bit
 // and 64-bit tables. Other architectures (MIPS, s390x) have different numbering
 // schemes — add them explicitly after verifying.
-#if defined(IREE_ARCH_X86_32) || defined(IREE_ARCH_X86_64) || \
-    defined(IREE_ARCH_ARM_32) || defined(IREE_ARCH_ARM_64) || \
-    defined(IREE_ARCH_RISCV_32) || defined(IREE_ARCH_RISCV_64)
+#if defined(IREE_ARCH_X86_32) || defined(IREE_ARCH_X86_64) ||     \
+    defined(IREE_ARCH_ARM_32) || defined(IREE_ARCH_ARM_64) ||     \
+    defined(IREE_ARCH_RISCV_32) || defined(IREE_ARCH_RISCV_64) || \
+    defined(IREE_ARCH_MIPS_64)
 #define IREE_IO_URING_SYSCALL_SETUP 425
 #define IREE_IO_URING_SYSCALL_ENTER 426
 #define IREE_IO_URING_SYSCALL_REGISTER 427
