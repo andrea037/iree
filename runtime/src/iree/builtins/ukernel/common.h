@@ -208,7 +208,7 @@ static inline bool iree_uk_all_bits_set(const iree_uk_uint64_t val,
 //===----------------------------------------------------------------------===//
 // Architecture detection (copied from target_platform.h)
 //===----------------------------------------------------------------------===//
-// ovde je falio mips??
+// Added MIPS here
 
 #if defined(__arm64) || defined(__aarch64__) || defined(_M_ARM64) || \
     defined(_M_ARM64EC)

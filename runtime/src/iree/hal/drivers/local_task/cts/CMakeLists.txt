@@ -24,23 +24,29 @@ iree_cc_library(
   PUBLIC
 )
 
-iree_hal_cts_testdata(
-  FORMAT_NAME
-    llvm_cpu
-  TARGET_DEVICE
-    "local"
-  IDENTIFIER
-    "iree_cts_testdata_llvm_cpu"
-  BACKEND_NAME
-    "local_task"
-  FORMAT_STRING
-    [=["embedded-elf-" IREE_ARCH]=]
-  TESTDATA_DIR
-    "${PROJECT_SOURCE_DIR}/runtime/src/iree/hal/cts/testdata"
-  FLAGS
-    "--iree-hal-local-target-device-backends=llvm-cpu"
-    "--iree-llvmcpu-target-cpu=generic"
-)
+# Only build this test data when the IREE_TARGET_BACKEND_LLVM_CPU backend is enabled
+if (IREE_TARGET_BACKEND_LLVM_CPU)
+  iree_hal_cts_testdata(
+    FORMAT_NAME
+      llvm_cpu
+    TARGET_DEVICE
+      "local"
+    IDENTIFIER
+      "iree_cts_testdata_llvm_cpu"
+    BACKEND_NAME
+      "local_task"
+    FORMAT_STRING
+      [=["embedded-elf-" IREE_ARCH]=]
+    TESTDATA_DIR
+      "${PROJECT_SOURCE_DIR}/runtime/src/iree/hal/cts/testdata"
+    FLAGS
+      "--iree-hal-local-target-device-backends=llvm-cpu"
+      "--iree-llvmcpu-target-cpu=generic"
+  )
+  set (LLVM_CPU_TESTDATA_LIB "::testdata_llvm_cpu_lib")
+else ()
+  set (LLVM_CPU_TESTDATA_LIB "")
+endif()
 
 iree_hal_cts_testdata(
   FORMAT_NAME
@@ -63,7 +69,7 @@ iree_hal_cts_test_suite(
   BACKENDS_LIB
     ::backends
   TESTDATA_LIBS
-    ::testdata_llvm_cpu_lib
+    ${LLVM_CPU_TESTDATA_LIB}
     ::testdata_vmvx_lib
 )
 

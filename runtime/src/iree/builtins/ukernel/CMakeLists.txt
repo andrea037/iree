@@ -226,7 +226,8 @@ iree_bitcode_library(
     "unpack.c"
     "unpack_tile.c"
 )
-# dodajemo ovde biblioteku za mips
+
+# Add the ukernel bitcode library for MIPS
 iree_bitcode_library(
   NAME
     ukernel_bitcode_generic_mips_64

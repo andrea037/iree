@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.26) #minimalna cmake verzija
+cmake_minimum_required(VERSION 3.26) # minimum CMake version
 
 # CMake invokes the toolchain file twice during the first build, but only once
 # during subsequent rebuilds. This was causing the various flags to be added
@@ -9,41 +9,53 @@ cmake_minimum_required(VERSION 3.26) #minimalna cmake verzija
 
 if(MIPS_TOOLCHAIN_INCLUDED)
   return()
-endif()                              #guard od dvostrukog include-a
+endif()                              # double include guard
 set(MIPS_TOOLCHAIN_INCLUDED true)
 
-set(CMAKE_SYSTEM_NAME Linux)  # os = linux
-set(CMAKE_SYSTEM_PROCESSOR mips64) # ciljna arhitektura = mips 64-bit ! ovde ostaje mips64 !
+set(CMAKE_SYSTEM_NAME Linux)  # os = Linux
+set(CMAKE_SYSTEM_PROCESSOR mips64) # target architecture = MIPS 64-bit (stays mips64 here)
 
 set(MIPS_TOOLCHAIN_PREFIX "${MIPS_TOOLCHAIN_PREFIX}")
 if(MIPS_TOOLCHAIN_PREFIX STREQUAL "")
   set(MIPS_TOOLCHAIN_PREFIX "mips64el-linux-gnuabi64-")
 endif()
 
-if(NOT "${MIPS_TOOLCHAIN_ROOT}" STREQUAL "")   # ovo se razlikuje u odnosu na linux_mips64.cmake (tamo je clang ovde gcc)
+if(NOT "${MIPS_TOOLCHAIN_ROOT}" STREQUAL "")   # different from linux_mips64.cmake (gcc used here compared to clang in the other)
   set(CMAKE_AR           "${MIPS_TOOLCHAIN_ROOT}/bin/${MIPS_TOOLCHAIN_PREFIX}ar")
   set(CMAKE_C_COMPILER   "${MIPS_TOOLCHAIN_ROOT}/bin/${MIPS_TOOLCHAIN_PREFIX}gcc")
   set(CMAKE_CXX_COMPILER "${MIPS_TOOLCHAIN_ROOT}/bin/${MIPS_TOOLCHAIN_PREFIX}g++")
   set(CMAKE_RANLIB       "${MIPS_TOOLCHAIN_ROOT}/bin/${MIPS_TOOLCHAIN_PREFIX}ranlib")
   set(CMAKE_STRIP        "${MIPS_TOOLCHAIN_ROOT}/bin/${MIPS_TOOLCHAIN_PREFIX}strip")
-  set(CMAKE_SYSROOT      "${MIPS_TOOLCHAIN_ROOT}/sysroot") #root fajl sistem za target
+  set(CMAKE_SYSROOT      "${MIPS_TOOLCHAIN_ROOT}/sysroot") 
+  # Used only by run_mips_test.sh (QEMU -L) at test time, kept separate from
+  # CMAKE_SYSROOT because passing --sysroot to gcc breaks the cross-compile
+  # when using the distro-packaged toolchain
+  set(MIPS_SYSROOT       "${MIPS_TOOLCHAIN_ROOT}/sysroot")
 else()
   set(CMAKE_C_COMPILER   "${MIPS_TOOLCHAIN_PREFIX}gcc")
   set(CMAKE_CXX_COMPILER "${MIPS_TOOLCHAIN_PREFIX}g++")
-  #set(CMAKE_SYSROOT      "/usr/mips64el-linux-gnuabi64") 
+  # Do NOT set CMAKE_SYSROOT here: the distro mips64el-linux-gnuabi64-gcc
+  # package already knows its own sysroot, and passing --sysroot explicitly
+  # breaks the build. MIPS_SYSROOT below is only for QEMU's -L flag at test
+  # time (see run_mips_test.sh / iree_cc_test.cmake).
+  set(MIPS_SYSROOT       "/usr/mips64el-linux-gnuabi64")
 endif()
 
 set(MIPS_COMPILER_FLAGS "\
-    -march=mips64r2 -mabi=64") #isa verzija i abi
+    -march=mips64r2 -mabi=64") # ISA version and ABI
 
 set(MIPS_QEMU_CPU_FLAGS "MIPS64R2-generic") # Generic 64-bit MIPS Release 2 CPU model == mips64r2
 
-# set(MIPS64_TEST_DEFAULT_LLVM_FLAGS
-#   "--iree-llvmcpu-target-triple=mips64el-unknown-linux-gnu"   #<arch>-<vendor>-<os>-<environment> mips64el??
-#   "--iree-llvmcpu-target-abi=64"             # odgovara za mabi od gore
-#   "--iree-llvmcpu-target-cpu=mips64"         # model za instruction selection, odgovara za march
-#   CACHE INTERNAL "Default llvm codegen flags for testing purposes") -> treba nam rpazno samo??
 
+# The block below is the Phase 2 version and is commented out on purpose:
+# Phase 1 has no MIPS code generation (VMVX only), so there are no llvm-cpu
+# codegen flags to pass. Uncomment and populate it when MIPS codegen lands in
+# Phase 2; until then the active value must stay empty.
+# set(MIPS64_TEST_DEFAULT_LLVM_FLAGS
+#   "--iree-llvmcpu-target-triple=mips64el-unknown-linux-gnu"   #<arch>-<vendor>-<os>-<environment>
+#   "--iree-llvmcpu-target-abi=64"
+#   "--iree-llvmcpu-target-cpu=mips64"
+#   CACHE INTERNAL "Default llvm codegen flags for testing purposes")
 set(MIPS64_TEST_DEFAULT_LLVM_FLAGS
   ""
   CACHE INTERNAL "Default llvm codegen flags for testing purposes")
