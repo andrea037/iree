@@ -19,6 +19,29 @@ BUILD_DIR="${1:-${IREE_TARGET_BUILD_DIR:-build-mips}}"
 MIPS_PLATFORM="${IREE_TARGET_PLATFORM:-linux}"
 MIPS_ARCH="${IREE_TARGET_ARCH:-mips_64}"
 
+# Auto-detect the QEMU MIPS emulator so the script can run with no QEMU_BIN=
+# prefix. run_mips_test.sh reads QEMU_BIN to decide whether to emulate; the
+# sysroot (-L) and QEMU_CPU_FLAGS are already provided by CMake per test.
+# Override by setting QEMU_BIN yourself (e.g. empty for on-device runs).
+if [[ -z "${QEMU_BIN:-}" ]]; then
+  QEMU_BIN="$(command -v qemu-mips64el || command -v qemu-mips64el-static || true)"
+fi
+export QEMU_BIN
+if [[ -z "${QEMU_BIN}" ]]; then
+  echo "warning: no qemu-mips64el found on PATH; tests will run the target"
+  echo "         binaries directly (only valid on a real MIPS host)."
+fi
+
+# Sysroot for QEMU's dynamic loader. The -L flag baked into each test command is
+# NOT sufficient on its own: it fails to resolve some libraries (notably
+# libstdc++.so.6, needed by the C++ tests), so QEMU_LD_PREFIX must also be set.
+# Defaults to the distro cross sysroot; set it yourself for a custom toolchain
+# root (e.g. "${MIPS_TOOLCHAIN_ROOT}/sysroot").
+if [[ -z "${QEMU_LD_PREFIX:-}" ]]; then
+  QEMU_LD_PREFIX="/usr/mips64el-linux-gnuabi64"
+fi
+export QEMU_LD_PREFIX
+
 export CTEST_PARALLEL_LEVEL=${CTEST_PARALLEL_LEVEL:-$(nproc)}
 
 ctest_args=(
@@ -39,17 +62,17 @@ declare -a label_exclude_args=(
   "^nomips$"
 )
 
-# TODO(#10462): not included in phase 1
+# TODO(#10462): e2e test not run in this VMVX-only build
 declare -a test_exclude_args=(
   "regression_llvm-cpu_lowering_config"
 )
 
-# Known MIPS-alignment failures under qemu-mips64el, excluded from the Phase 1
+# Known MIPS-alignment failures under qemu-mips64el, excluded from the test
 # gate. Each fails with SIGBUS (unaligned memory access in a binary/data parser
 # that QEMU user-mode does not fix up). Only these specific
 # broken tests are skipped; the many passing tokenizer/tooling tests still run
 declare -a runtime_test_exclude_args=(
-  # ELF loader: unused by VMVX (guide Phase 1: "No ELF loader work").
+  # ELF loader: unused by VMVX.
   "iree/hal/local/elf/elf_module_test"
   # Profiling / command-stream replay tooling.
   "iree/hal/local/profile_test"
@@ -87,9 +110,9 @@ runtime_ctest_args=(
 # the list is not doubled by the "+ echo ..." trace lines
 { set +x; } 2>/dev/null
 echo ""
-echo "******** Excluding ${#runtime_test_exclude_args[@]} known-broken tests from the Phase 1 gate ********"
+echo "******** Excluding ${#runtime_test_exclude_args[@]} known-broken tests from the test gate ********"
 echo "These fail under qemu-mips64el with SIGBUS (unaligned access in binary/data"
-echo "parsers), are off the VMVX inference path, and are deferred to a later phase:"
+echo "parsers), are off the VMVX inference path, and are deferred to future work:"
 for _t in "${runtime_test_exclude_args[@]}"; do
   echo "  - ${_t}"
 done
@@ -98,7 +121,7 @@ echo "******** Running runtime CTest ********"
 set -x
 ctest ${runtime_ctest_args[@]}
 
-# Tests not included in phase 1
+# e2e tests (not run in this VMVX-only build)
 # tests_label_exclude_regex="($(IFS="|" ; echo "${label_exclude_args[*]}"))"
 # tests_exclude_regex="($(IFS="|" ; echo "${test_exclude_args[*]}"))"
 # test_ctest_args=(

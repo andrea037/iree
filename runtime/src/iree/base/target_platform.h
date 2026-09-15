@@ -155,7 +155,7 @@ enum iree_arch_enum_e {
 
 #if defined(IREE_ARCH_MIPS_64) && defined(IREE_ENDIANNESS_BIG)
 #error Big-endian MIPS is not supported by IREE. Use a little-endian target
-#error (mips64el). See Phase 0, Decision 2.
+#error (mips64el).
 #endif
 
 //==============================================================================

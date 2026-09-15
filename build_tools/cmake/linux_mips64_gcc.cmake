@@ -47,10 +47,10 @@ set(MIPS_COMPILER_FLAGS "\
 set(MIPS_QEMU_CPU_FLAGS "MIPS64R2-generic") # Generic 64-bit MIPS Release 2 CPU model == mips64r2
 
 
-# The block below is the Phase 2 version and is commented out on purpose:
-# Phase 1 has no MIPS code generation (VMVX only), so there are no llvm-cpu
-# codegen flags to pass. Uncomment and populate it when MIPS codegen lands in
-# Phase 2; until then the active value must stay empty.
+# The block below is the native (llvm-cpu) codegen version and is commented out on purpose:
+# this VMVX-only build does no MIPS code generation, so there are no llvm-cpu
+# codegen flags to pass. Uncomment and populate it when native MIPS
+# codegen is added; until then the active value below must stay empty.
 # set(MIPS64_TEST_DEFAULT_LLVM_FLAGS
 #   "--iree-llvmcpu-target-triple=mips64el-unknown-linux-gnu"   #<arch>-<vendor>-<os>-<environment>
 #   "--iree-llvmcpu-target-abi=64"
