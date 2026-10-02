@@ -1,4 +1,10 @@
-if(TRUE)
+if(NOT IREE_INPUT_STABLEHLO AND NOT IREE_HOST_BIN_DIR)
+  return()
+endif()
+
+# StableHLO e2e model tests require llvm-cpu codegen for the target.
+# IREE has no MIPS codegen (VMVX-only), so skip them on MIPS.
+if(IREE_ARCH STREQUAL "mips_64")
   return()
 endif()
 
