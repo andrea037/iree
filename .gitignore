@@ -24,6 +24,7 @@
 # CMake artifacts
 /build/
 /build-*/
+/build.log
 Testing/
 /compiler/build/
 /runtime/build/
