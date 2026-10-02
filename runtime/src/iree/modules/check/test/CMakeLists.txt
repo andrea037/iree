@@ -26,14 +26,6 @@ iree_lit_test_suite(
     "hostonly"
 )
 
-# Each backend is defined explicitly via iree_check_single_backend_test_suite
-# (instead of the iree_check_test_suite default-3-backend convenience macro)
-# so that llvm-cpu can carry its own "nomips" label without also disabling
-# the vmvx/vulkan-spirv variants: the compiler backend availability check is
-# skipped when using a prebuilt host compiler (IREE_HOST_BIN_DIR), so
-# IREE_TARGET_BACKEND_LLVM_CPU=OFF does not by itself stop llvm-cpu tests
-# from being generated/run on a codegen-less target build (e.g. MIPS Phase 1,
-# vmvx only).
 iree_check_single_backend_test_suite(
   NAME
     check_vmvx_local-task
