@@ -227,21 +227,6 @@ iree_bitcode_library(
     "unpack_tile.c"
 )
 
-# Add the ukernel bitcode library for MIPS
-iree_bitcode_library(
-  NAME
-    ukernel_bitcode_generic_mips_64
-  ARCH
-    mips_64
-  SRCS
-    "conv.c"
-    "mmt4d.c"
-    "pack.c" 
-    "pack_tile.c"
-    "unpack.c"
-    "unpack_tile.c"
-)
-
 iree_link_bitcode(
   NAME
     ukernel_bitcode_x86_64
@@ -283,14 +268,6 @@ iree_link_bitcode(
   SRCS
     "ukernel_bitcode_generic_riscv_32.bc"
 
-)
-
-# za mips
-iree_link_bitcode(
-  NAME
-    ukernel_bitcode_mips_64
-  SRCS
-    "ukernel_bitcode_generic_mips_64.bc"
 )
 
 iree_c_embed_data(

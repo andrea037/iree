@@ -103,8 +103,6 @@ bitcode_generic_archs = [
     "arm_32",
     "riscv_64",
     "riscv_32",
-    "mips_64",
-    "mips_32"
 ]
 
 # Enumerate all archs for which we have arch-specific dedicated ukernel code,
@@ -113,7 +111,6 @@ bitcode_specific_archs = [
     "x86_64",
     "arm_64",
     "riscv_64",
-    #"mips_64",
 ]
 
 [iree_bitcode_library(

@@ -208,7 +208,6 @@ static inline bool iree_uk_all_bits_set(const iree_uk_uint64_t val,
 //===----------------------------------------------------------------------===//
 // Architecture detection (copied from target_platform.h)
 //===----------------------------------------------------------------------===//
-// Added MIPS here
 
 #if defined(__arm64) || defined(__aarch64__) || defined(_M_ARM64) || \
     defined(_M_ARM64EC)
@@ -226,8 +225,6 @@ static inline bool iree_uk_all_bits_set(const iree_uk_uint64_t val,
 
 #if defined(__mips__) && defined(_MIPS_SIM) && (_MIPS_SIM == _ABI64)
 #define IREE_UK_ARCH_MIPS_64 1
-#elif defined(__mips__)
-#define IREE_UK_ARCH_MIPS_32 1
 #endif  // MIPS
 
 #if defined(__wasm32__)
@@ -253,8 +250,7 @@ static inline bool iree_uk_all_bits_set(const iree_uk_uint64_t val,
     defined(IREE_UK_ARCH_MIPS_64)
 #define IREE_UK_ARCH_IS_64_BIT
 #elif defined(IREE_UK_ARCH_ARM_32) || defined(IREE_UK_ARCH_RISCV_32) || \
-    defined(IREE_UK_ARCH_WASM_32) || defined(IREE_UK_ARCH_X86_32) ||    \
-    defined(IREE_UK_ARCH_MIPS_32)
+    defined(IREE_UK_ARCH_WASM_32) || defined(IREE_UK_ARCH_X86_32)
 #define IREE_UK_ARCH_IS_32_BIT
 #else
 #error Unknown architecture
