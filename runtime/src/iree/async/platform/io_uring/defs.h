@@ -35,13 +35,20 @@ extern "C" {
 // generic syscall table; x86 happens to use the same values in both its 32-bit
 // and 64-bit tables. Other architectures (MIPS, s390x) have different numbering
 // schemes — add them explicitly after verifying.
-#if defined(IREE_ARCH_X86_32) || defined(IREE_ARCH_X86_64) ||     \
-    defined(IREE_ARCH_ARM_32) || defined(IREE_ARCH_ARM_64) ||     \
-    defined(IREE_ARCH_RISCV_32) || defined(IREE_ARCH_RISCV_64) || \
-    defined(IREE_ARCH_MIPS_64)
+#if defined(IREE_ARCH_X86_32) || defined(IREE_ARCH_X86_64) ||   \
+    defined(IREE_ARCH_ARM_32) || defined(IREE_ARCH_ARM_64) ||   \
+    defined(IREE_ARCH_RISCV_32) || defined(IREE_ARCH_RISCV_64)
 #define IREE_IO_URING_SYSCALL_SETUP 425
 #define IREE_IO_URING_SYSCALL_ENTER 426
 #define IREE_IO_URING_SYSCALL_REGISTER 427
+#elif defined(IREE_ARCH_MIPS_64)
+// MIPS does not use the generic syscall table: each ABI adds a base offset to
+// the 425/426/427 assignments. IREE_ARCH_MIPS_64 is only ever defined for the
+// n64 ABI (base __NR_Linux == 5000; see target_platform.h), giving 5425/5426/
+// 5427. The raw 425/426/427 values are not valid syscalls under any MIPS ABI.
+#define IREE_IO_URING_SYSCALL_SETUP 5425
+#define IREE_IO_URING_SYSCALL_ENTER 5426
+#define IREE_IO_URING_SYSCALL_REGISTER 5427
 #else
 #error "io_uring syscall numbers not defined for this architecture"
 #endif
