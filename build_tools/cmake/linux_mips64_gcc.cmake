@@ -20,7 +20,7 @@ if(MIPS_TOOLCHAIN_PREFIX STREQUAL "")
   set(MIPS_TOOLCHAIN_PREFIX "mips64el-linux-gnuabi64-")
 endif()
 
-if(NOT "${MIPS_TOOLCHAIN_ROOT}" STREQUAL "")   # different from linux_mips64.cmake (gcc used here compared to clang in the other)
+if(NOT "${MIPS_TOOLCHAIN_ROOT}" STREQUAL "")   # use the GNU toolchain binaries under the provided root
   set(CMAKE_AR           "${MIPS_TOOLCHAIN_ROOT}/bin/${MIPS_TOOLCHAIN_PREFIX}ar")
   set(CMAKE_C_COMPILER   "${MIPS_TOOLCHAIN_ROOT}/bin/${MIPS_TOOLCHAIN_PREFIX}gcc")
   set(CMAKE_CXX_COMPILER "${MIPS_TOOLCHAIN_ROOT}/bin/${MIPS_TOOLCHAIN_PREFIX}g++")
