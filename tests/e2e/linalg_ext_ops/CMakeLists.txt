@@ -37,9 +37,6 @@ iree_check_single_backend_test_suite(
     "nowasm"
 )
 
-# The winograd input transform vectorizes beyond the scalar MIPS target's
-# vector width ("large vector sizes"); no SIMD on generic MIPS (MSA future
-# work). Split out and labelled nomips. winograd_output above lowers fine.
 iree_check_single_backend_test_suite(
   NAME
     check_llvm-cpu_winograd_input_local-task
@@ -52,8 +49,8 @@ iree_check_single_backend_test_suite(
   COMPILER_FLAGS
     "--iree-llvmcpu-target-cpu=generic"
   LABELS
-    "nowasm"
     "nomips"
+    "nowasm"
 )
 
 iree_check_single_backend_test_suite(
